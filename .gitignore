@@ -1,0 +1,11 @@
+/.calva/
+/.clj-kondo/
+/.cpcache/
+.nrepl-port
+scrambles.iml
+yarn.lock
+/node_modules/
+/.lsp/
+/.shadow-cljs/
+/public/js/
+yarn-error.log
