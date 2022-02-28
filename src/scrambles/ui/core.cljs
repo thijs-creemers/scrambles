@@ -1,32 +1,40 @@
 (ns scrambles.ui.core
-  (:require [re-frame.core :as re-frame]
-            [reagent.dom :as rdom]
+  (:require [clojure.string :as s]
+            [re-frame.core :as re-frame]
             [reagent.core :as reagent]
-            [secretary.core :as secretary :refer-macros [defroute]]
-            [scrambles.ui.events :as events]))
+            [reagent.dom :as rdom]
+            [scrambles.ui.events :as events]
+            [scrambles.ui.subscriptions :as subscriptions]
+            [secretary.core :refer-macros [defroute]]))
+
 
 (defonce form-data
          (reagent/atom
            {:letters {:value "" :valid? true :visited? false}
             :word    {:value "" :valid? true :visited? false}}))
 
+
 (defn reset-form-values
   [data]
-  (re-frame/dispatch [::reset-query-result])
+  (re-frame/dispatch [::events/reset-query-result])
   (reset! data {:letters {:value "" :valid? true :visited? false}
                 :word    {:value "" :valid? true :visited? false}}))
 
+
 (defn- submit-form
   [event]
+  (prn (str "FORM-DATA" @form-data))
   (.preventDefault event)
-  ;; todo add data for submission
-  (re-frame/dispatch [::events/submit-data (get-new-query) {}]))
+  (re-frame/dispatch [::events/submit-edit-form {:letters (get-in @form-data [:letters :value])
+                                                 :word    (get-in @form-data [:word :value])}]))
+
 
 (defn check-and-save!
   [field-key value set-visited?]
   (if set-visited?
     (swap! form-data update-in [field-key] assoc :message nil :valid? true :visited? true :value (s/trim value))
     (swap! form-data update-in [field-key] assoc :message nil :valid? true :value (s/trim value))))
+
 
 (defn field-change-handler
   [field-key value]
@@ -37,34 +45,47 @@
   [title form-spec data field-key]
   (fn []
     (let [html-attributes (-> form-spec
+                              (assoc-in [:style] {:margin-left "20px"})
                               (assoc-in [:class] (if (:valid? (field-key @data)) "valid" "error"))
-                              (assoc-in [:placeholder] (str "Enter " title " Address"))
+                              (assoc-in [:placeholder] (str "Enter " title))
                               (assoc-in [:value] (:value (field-key @data)))
                               (assoc-in [:on-change] #(field-change-handler field-key (-> % .-target .-value)))
                               (assoc-in [:on-blur] #(check-and-save! field-key (-> % .-target .-value) true)))]
-      [:div.input-field
-       [:label.label {:for (:id html-attributes)} title]
-       [:input.input-field__input html-attributes]
-       (let [{:keys [visited? valid?]} (field-key @data)]
-         (when (and visited? (not valid?))
-           [:div.field-error (get-in @data [field-key :message])]))])))
+      [:div.ui.ribbon.label
+       [:label {:for (:id html-attributes)} title]
+       [:div.ui.big.input
+        [:input html-attributes
+         (let [{:keys [visited? valid?]} (field-key @data)]
+           (when (and visited? (not valid?))
+             [:div.field-error (get-in @data [field-key :message])]))]]])))
+
 
 (defn scramble-form-view []
   [:div.ui.container
-   [:form]]
-  [:form {:id "scramble-form"}
-   :on-submit submit-form
-   :on-reset #(reset-form-values form-data)
-   [:div.form-group
-    [:div.field-group {:style {:margin "30px"}}
-
+   [:div.ui.horizontal.divider]
+   [:div.ui.header "Scrambles"]
+   [:div.ui.horizontal.divider]
+   [:form {:id "scramble-form"
+           :on-submit submit-form
+           :on-reset #(reset-form-values form-data)}
+    [:div.content
      [my-input-field "Letters" {:type "text" :id "letters-field"} form-data :letters]
-     [my-input-field "Word" {:type "text" :id "word-field"} form-data :word]
-     [:div.button-group
-      [:button.button
-       {:type     "submit"} "Scramble?"]
-      [:button.button
-       {:type     "reset"} "Reset"]]]]])
+     [my-input-field "Word" {:type "text" :id "word-field"} form-data :word]]
+
+    [:div.ui.horizontal.divider]
+
+    [:div.content
+     [:button.ui.primary.button {:type "submit"} "Scramble?"]
+     [:button.ui.button {:type "reset"} "Reset"]]]
+   [:div.ui.horizontal.divider]
+   [:div.content
+    [:div.ui.header "Scramble result"]
+    (let [results @(re-frame/subscribe [::subscriptions/scramble-results])]
+     [:table
+      [:tbody
+       [:tr [:td "Status"] [:td (:status results)]]
+       [:tr [:td "Result"] [:td (if (:result results) "true" "false")]]
+       [:tr [:td "Message"] [:td (:message results)]]]])]])
 
 
 (defn routes
@@ -78,7 +99,7 @@
 ;;; Calls the rdom/render function to render the `app` function on the html element with id `app`.
 (defn ^:dev/after-load start
   []
-  (rdom/render [app] (.getElementById js/document "app")))
+  (rdom/render [scramble-form-view] (.getElementById js/document "app")))
 
 ;;; Initialisation of the app.
 ;;;

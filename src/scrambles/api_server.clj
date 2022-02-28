@@ -4,6 +4,7 @@
             [compojure.route :as route]
             [ring.adapter.jetty :as jetty]
             [ring.middleware.json :refer [wrap-json-body wrap-json-response]]
+            [jumblerg.middleware.cors :refer [wrap-cors]]
             [scrambles.core :refer [scramble?]]))
 
 (defonce ^:private api-server (atom nil))
@@ -16,10 +17,12 @@
       {:status  201
        :body    {:status "success"
                  :result (scramble? letters word)
+                 :message ""
                  :params [letters word]}}
       (catch IllegalArgumentException exc
         {:status  400
          :body    {:status  "failed"
+                   :result false
                    :message (.getMessage exc)
                    :params  [letters word]}}))))
 
@@ -37,6 +40,7 @@
 
 (def app
   (-> app-routes
+      (wrap-cors #".*")
       wrap-json-response
       (wrap-json-body {:keywords? true})))
 
