@@ -9,3 +9,4 @@ yarn.lock
 /.shadow-cljs/
 /public/js/
 yarn-error.log
+/scrambles.jar

@@ -15,9 +15,15 @@ yarn clean
 ```
 This installs a clean set of node npm modules and compiles the css.
 
-## Run unit-tests
-
+## Run server unit-tests
+```bash
 clj -X:test
+```
+-or-
+
+```bash
+yarn server-test
+```
 
 ## Start the api-server for development
 - Start and connect to the REPL.
@@ -27,8 +33,29 @@ clj -X:test
 
 
 ## Start the api-server through clojure cli
-
+```bash
 clj -M:server
+```
+
+## Build an uberjar for the sever
+
+```bash
+clojure -X:uberjar :jar scrambles.jar
+```
+-or-
+
+```bash
+yarn build-uberjar
+```
+
+## Run the server
+```bash
+java -cp srcambles.jar clojure.main -m scrambles.api-server
+```
+-or-
+```bash
+yarn api-server
+```
 
 ## Compile and run the dev server for the frontend
 ```bash

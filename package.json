@@ -12,6 +12,9 @@
     "dev": "shadow-cljs watch app",
     "release": "shadow-cljs release app --debug",
     "server": "shadow-cljs server",
+    "server-test": "clj -X:test",
+    "build-uberjar": "clj -X:uberjar :jar scrambles.jar",
+    "api-server": "java -cp scrambles.jar clojure.main -m scrambles.api-server",
     "lint": "clj-kondo --lint src --dependencies --parallel --copy-configs",
     "outdated": "clj -A:outdated",
     "clean": "rm -rf node_modules public/js yarn-error.log"
