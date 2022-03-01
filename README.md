@@ -25,6 +25,11 @@ clj -X:test
 - start the server with (-main)
 - The server can be stopped wit (stop-server)
 
+
+## Start the api-server through clojure cli
+
+clj -M:server
+
 ## Compile and run the dev server for the frontend
 ```bash
 yarn dev
