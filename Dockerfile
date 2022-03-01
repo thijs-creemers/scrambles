@@ -13,7 +13,7 @@ COPY scrambles.jar .
 EXPOSE 8000
 
 # Run the JAR
-CMD java -cp scrambles.jar clojure.main # -m scrambles.api-server
+CMD java -cp scrambles.jar clojure.main -m scrambles.api-server
 
 # docker build --tag scrambles -f Dockerfile .
 # docker run --name scrambles-container --env EV=true scrambles -p 8000:8000 -rm scrambles
