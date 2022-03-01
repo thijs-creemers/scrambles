@@ -13,7 +13,8 @@
     "release": "shadow-cljs release app --debug",
     "server": "shadow-cljs server",
     "lint": "clj-kondo --lint src --dependencies --parallel --copy-configs",
-    "outdated": "clj -A:outdated"
+    "outdated": "clj -A:outdated",
+    "clean": "rm -rf node_modules public/js yarn-error.log"
   },
   "devDependencies": {
     "shadow-cljs": "^2.17.5"
