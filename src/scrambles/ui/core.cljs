@@ -65,9 +65,9 @@
    [:div.ui.horizontal.divider]
    [:div.ui.header "Scrambles"]
    [:div.ui.horizontal.divider]
-   [:form {:id "scramble-form"
+   [:form {:id        "scramble-form"
            :on-submit submit-form
-           :on-reset #(reset-form-values form-data)}
+           :on-reset  #(reset-form-values form-data)}
     [:div.content
      [my-input-field "Letters" {:type "text" :id "letters-field"} form-data :letters]
      [my-input-field "Word" {:type "text" :id "word-field"} form-data :word]]
@@ -81,11 +81,11 @@
    [:div.content
     [:div.ui.header "Scramble result"]
     (let [results @(re-frame/subscribe [::subscriptions/scramble-results])]
-     [:table
-      [:tbody
-       [:tr [:td "Status"] [:td (:status results)]]
-       [:tr [:td "Result"] [:td (if (:result results) "true" "false")]]
-       [:tr [:td "Message"] [:td (:message results)]]]])]])
+      [:table
+       [:tbody
+        [:tr [:td "Status"] [:td (:status results)]]
+        [:tr [:td "Result"] [:td (if (:result results) "true" "false")]]
+        [:tr [:td "Message"] [:td (:message results)]]]])]])
 
 
 (defn routes

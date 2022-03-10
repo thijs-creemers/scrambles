@@ -1,4 +1,4 @@
-{:deps   {:aliases [:gui]}
+{:deps   {:aliases [:client]}
  :nrepl  {:port       8230}
  :builds {:app {:target     :browser
                 :output-dir "public/js"
